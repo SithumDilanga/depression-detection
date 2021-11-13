@@ -1,4 +1,5 @@
 import 'package:depression_detector/connect_bluetooth.dart';
+import 'package:depression_detector/settings.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -46,6 +47,18 @@ class _HomeState extends State<Home> {
                   primary: Color(0xffFFB800)
                 ),
               ),
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.settings,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Settings()),
+                );
+              }, 
             )
           ],
         ),

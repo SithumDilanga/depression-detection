@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -22,6 +24,8 @@ class _ConnectBluetoothState extends State<ConnectBluetooth> {
   int _deviceState;
 
   bool isDisconnecting = false;
+
+  double incomingData = 0;
 
   Map<String, Color> colors = {
     'onBorderColor': Colors.green,
@@ -345,6 +349,13 @@ class _ConnectBluetoothState extends State<ConnectBluetooth> {
                             FlutterBluetoothSerial.instance.openSettings();
                           },
                         ),
+                        SizedBox(height: 16.0,),
+                        Text(
+                          incomingData.toString()
+                        ),
+                        Text(
+                          incomingData < 0.03 ? 'your depression level is not good' : 'you are ok!'
+                        )
                       ],
                     ),
                   ),
@@ -388,6 +399,19 @@ class _ConnectBluetoothState extends State<ConnectBluetooth> {
             .then((_connection) {
           print('Connected to the device');
           connection = _connection;
+
+          // ------ read incoming bluetooth data part ------
+          connection.input.listen((Uint8List data) {
+            String dataStr = ascii.decode(data);
+            
+            setState(() {
+              incomingData = double.parse(dataStr);
+            });
+
+            print('Data incoming: $dataStr');
+          });
+          // ------ End read incoming bluetooth data part ------
+
           setState(() {
             _connected = true;
           });
@@ -409,7 +433,7 @@ class _ConnectBluetoothState extends State<ConnectBluetooth> {
         show('Device connected');
 
         setState(() => _isButtonUnavailable = false);
-      }
+      } 
     }
   }
 
@@ -459,7 +483,7 @@ class _ConnectBluetoothState extends State<ConnectBluetooth> {
   // Method to send message,
   // for turning the Bluetooth device on
   void _sendOnMessageToBluetooth() async {
-    connection.output.add(utf8.encode("1" + "\r\n"));
+    connection.output.add(utf8.encode("z" + "\r\n"));
     await connection.output.allSent;
     show('Device Turned On');
     setState(() {
